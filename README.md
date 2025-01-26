@@ -1,9 +1,47 @@
-# Expo Router and Tailwind CSS
+# Expo Router GitHub-style header animation
 
-Use [Expo Router](https://docs.expo.dev/router/introduction/) with [Nativewind](https://www.nativewind.dev/v4/overview/) styling.
+Have the title scroll-in with the content like the GitHub app. This is pretty easy with the new Reanimated scrolling features.
 
-## 🚀 How to use
+https://github.com/user-attachments/assets/285b4435-401e-4533-84b6-90ca03ae2537
 
-```sh
-npx create-expo-app -e with-router-tailwind
+```js
+export default function Page() {
+  const ref = useAnimatedRef();
+  const scroll = useScrollViewOffset(ref);
+  const navigation = useNavigation();
+  const headerStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        { translateY: interpolate(scroll.value, [0, 100], [50, 0], "clamp") },
+      ],
+    }),
+    []
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle(props: HeaderTitleProps) {
+        return (
+          <View
+            style={{
+              overflow: "hidden",
+              paddingBottom: 9,
+              marginBottom: -9,
+            }}
+          >
+            <Animated.View style={headerStyle}>
+              <HeaderTitle {...props} />
+            </Animated.View>
+          </View>
+        );
+      },
+    });
+  }, [scroll]);
+
+  return (
+    <Animated.ScrollView ref={ref}>
+      <Content />
+    </Animated.ScrollView>
+  );
+}
 ```
