@@ -1,5 +1,5 @@
-import { useNavigation } from "expo-router";
-import React, { useEffect } from "react";
+import { Tabs } from "expo-router";
+import React from "react";
 import { View } from "react-native";
 import { interpolate, useAnimatedStyle } from "react-native-reanimated";
 import Animated, {
@@ -7,43 +7,32 @@ import Animated, {
   useScrollViewOffset,
 } from "react-native-reanimated";
 
-import { HeaderTitle, HeaderTitleProps } from "@react-navigation/elements";
+import { HeaderTitle } from "@react-navigation/elements";
 
 export default function Page() {
   const ref = useAnimatedRef();
   const scroll = useScrollViewOffset(ref);
-  const navigation = useNavigation();
-  const headerStyle = useAnimatedStyle(
-    () => ({
-      transform: [
-        { translateY: interpolate(scroll.value, [0, 100], [50, 0], "clamp") },
-      ],
-    }),
-    []
-  );
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle(props: HeaderTitleProps) {
-        return (
-          <View
-            style={{
-              overflow: "hidden",
-              paddingBottom: 9,
-              marginBottom: -9,
-            }}
-          >
-            <Animated.View style={headerStyle}>
-              <HeaderTitle {...props} />
-            </Animated.View>
-          </View>
-        );
-      },
-    });
-  }, [scroll]);
+  const style = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: interpolate(scroll.value, [0, 100], [50, 0], "clamp") },
+    ],
+  }));
 
   return (
     <Animated.ScrollView ref={ref}>
+      <Tabs.Screen
+        options={{
+          headerTitle: (props) => (
+            <View
+              style={{ overflow: "hidden", paddingBottom: 9, marginBottom: -9 }}
+            >
+              <Animated.View style={style}>
+                <HeaderTitle {...props} />
+              </Animated.View>
+            </View>
+          ),
+        }}
+      />
       <Content />
     </Animated.ScrollView>
   );
